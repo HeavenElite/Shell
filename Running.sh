@@ -7,8 +7,8 @@
 ### CPU & Memory Usage Detection
 
 declare -i TotalCpuIdlePercentage=$(top -b -n 2 | grep '%Cpu' | tail -n 1 | awk 'BEGIN{FS=" "}{printf "%2i",$8}')	# CPU Idle Percentage, Get from top command.
-declare    AverageCpuUsage=$(( 100 - ${TotalCpuIdlePercentage} ))							# CPU Usage Percentage
-declare    MemoryUsage=$(free | grep 'Mem' | awk '{printf "%2i",$3/$2*100}')						# Memory Usage Percentage, Get from free command.
+declare    AverageCpuUsage=$(( 100 - ${TotalCpuIdlePercentage} ))													# CPU Usage Percentage
+declare    MemoryUsage=$(free | grep 'Mem' | awk '{printf "%2i",$3/$2*100}')										# Memory Usage Percentage, Get from free command.
 
 if [ "${AverageCpuUsage}" -ge '75' ]; then
 	echo
@@ -29,12 +29,12 @@ fi
 
 declare    File="./checkingitems"           	# The file that is recording all the checking items.
 declare -i ItemCount=$(cat "${File}" | wc -l)	# Count the total number of the checking items.
-declare -i Item                 # Record the current checking item number.
-declare    CurrentItem          # Record the current checking item.
-declare    Running              # Record all the existing items.
-declare -i RunningCount=0       # Count the Running items.
-declare    Error                # Record all the failed items.
-declare -i ErrorCount=0         # Count the failure items.
+declare -i Item                 				# Record the current checking item number.
+declare    CurrentItem          				# Record the current checking item.
+declare    Running              				# Record all the existing items.
+declare -i RunningCount=0      					# Count the Running items.
+declare    Error                				# Record all the failed items.
+declare -i ErrorCount=0         				# Count the failure items.
 
 # File="./checkingitems"
 # ItemCount=$(cat "${File}" | wc -l)
@@ -97,13 +97,13 @@ if [ "${ErrorCount}" != '0' ]; then
 	echo -e "Restarting the ${ErrorCount} Dead Processes Now... \n"
 	
 	declare    StartBash='/home/authentic/Runtime/authentic-server/bin/start.sh'	# The Path of start.sh.
-	declare    Restart=${Error}							# Restart is used to get the value of ${Error} for restarting module. 
-	declare    RestartItem								# To record the current app that is about to restart again.				
-	declare    RestartCount=${ErrorCount}						# It's used to achieve the value from ${ErrorCount} for this module.
-	declare    RestartFailed							# To record all the items which are still stoping.
-	declare    RestartFailedCount=0							# To summarize the totoal number of failed restarting items.
-	declare    RestartSucceed							# To record all the items successfully being restarted.
-	declare    RestartSucceedCount=0						# To summarize the number of items that have been restarted.
+	declare    Restart=${Error}														# Restart is used to get the value of ${Error} for restarting module. 
+	declare    RestartItem															# To record the current app that is about to restart again.				
+	declare    RestartCount=${ErrorCount}											# It's used to achieve the value from ${ErrorCount} for this module.
+	declare    RestartFailed														# To record all the items which are still stoping.
+	declare    RestartFailedCount=0													# To summarize the totoal number of failed restarting items.
+	declare    RestartSucceed														# To record all the items successfully being restarted.
+	declare    RestartSucceedCount=0												# To summarize the number of items that have been restarted.
 
 	cd ${StartBash}
 
