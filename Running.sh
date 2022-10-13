@@ -1,22 +1,23 @@
 #!/bin/bash
 # Program:
-# 	Check if the processes recorded in checkingitems file are existing or not. If not, alter will be prompted.
+# 	Check if the processes recorded in checkingitems file are existing or not. If not, alert will be prompted.
 # History:
-#       Laurence	2022.09.10	Version 1.0
+#       Qi NIE  2022.09.06      Version 1.0
 
-### CPU & Memory Usage Detection
+### CPU & Memory Usage
 
-declare -i TotalCpuIdlePercentage=$(top -b -n 2 | grep '%Cpu' | tail -n 1 | awk 'BEGIN{FS=" "}{printf "%2i",$8}')	# CPU Idle Percentage, Get from top command.
-declare    AverageCpuUsage=$(( 100 - ${TotalCpuIdlePercentage} ))													# CPU Usage Percentage
-declare    MemoryUsage=$(free | grep 'Mem' | awk '{printf "%2i",$3/$2*100}')										# Memory Usage Percentage, Get from free command.
+TotalCpuIdlePercentage=$(top -b -n 2 | grep '%Cpu' | tail -n 1 | awk 'BEGIN{FS=" "}{printf "%2i",$8}')
+AverageCpuUsage=$(( 100 - ${TotalCpuIdlePercentage} ))
+MemoryUsage=$(free | grep 'Mem' | awk '{printf "%2i",$3/$2*100}')
+CoreNumber=$(lscpu | grep '^CPU(s):' | awk '{print $2}')
 
 if [ "${AverageCpuUsage}" -ge '75' ]; then
 	echo
-	echo -e "CPU usage, including ${CoreNumber} cores, is ${AverageCpuUsage}% now, >= 75%. Shell will stop running. \n"
+	echo -e "CPU usage, including ${CoreNumber} cores, is ${AverageCpuUsage}% now, >= 75%. Shell will stop running.  \n"
 	exit
 elif [ "${MemoryUsage}" -ge '75' ]; then
 	echo
-	echo -e "Mem usage now is ${AverageCpuUsage}%, >= 75%. Shell will stop running. \n"
+	echo -e "Mem usage now is ${AverageCpuUsage}%, >= 75%. Shell will stop running.  \n"
 	exit
 else
 	echo
@@ -27,18 +28,17 @@ fi
 
 ### Process Examnination
 
-declare    File="./checkingitems"           	# The file that is recording all the checking items.
-declare -i ItemCount=$(cat "${File}" | wc -l)	# Count the total number of the checking items.
-declare -i Item                 				# Record the current checking item number.
-declare    CurrentItem          				# Record the current checking item.
-declare    Running              				# Record all the existing items.
-declare -i RunningCount=0      					# Count the Running items.
-declare    Error                				# Record all the failed items.
-declare -i ErrorCount=0         				# Count the failure items.
+declare    File                 # The file that is recording all the checking items.
+declare -i ItemCount            # Count the total number of the checking items.
+declare -i Item                 # Record the current checking item number.
+declare    CurrentItem          # Record the current checking item.
+declare    Running              # Record all the existing items.
+declare -i RunningCount=0       # Count the Running items.
+declare    Error                # Record all the failed items.
+declare -i ErrorCount=0         # Count the failure items.
 
-# File="./checkingitems"
-# ItemCount=$(cat "${File}" | wc -l)
-
+File="./checkingitems"
+ItemCount=$(cat "${File}" | wc -l)
 echo
 echo -e "There are ${ItemCount} processes that will be checked by this Shell. \n"
 
@@ -96,16 +96,14 @@ fi
 if [ "${ErrorCount}" != '0' ]; then
 	echo -e "Restarting the ${ErrorCount} Dead Processes Now... \n"
 	
-	declare    StartBash='/home/authentic/Runtime/authentic-server/bin/start.sh'	# The Path of start.sh.
-	declare    Restart=${Error}														# Restart is used to get the value of ${Error} for restarting module. 
-	declare    RestartItem															# To record the current app that is about to restart again.				
-	declare    RestartCount=${ErrorCount}											# It's used to achieve the value from ${ErrorCount} for this module.
-	declare    RestartFailed														# To record all the items which are still stoping.
-	declare    RestartFailedCount=0													# To summarize the totoal number of failed restarting items.
-	declare    RestartSucceed														# To record all the items successfully being restarted.
-	declare    RestartSucceedCount=0												# To summarize the number of items that have been restarted.
-
-	cd ${StartBash}
+	declare StartPath='/home/authentic/Runtime/authentic-server/bin/'
+	declare Restart=${Error}
+	declare RestartItem
+	declare RestartCount=${ErrorCount}
+	declare RestartFailed
+	declare RestartFailedCount=0
+	declare RestartSucceed
+	declare RestartSucceedCount=0
 
 	echo "${Restart}" | grep LocalC &> /dev/null
       	
@@ -113,9 +111,10 @@ if [ "${ErrorCount}" != '0' ]; then
 		Restart=${Restart/LocalC,/}
 		RestartCount=$(( ${RestartCount} - 1 ))
 		echo -e "Shell is trying to restart LocalC now..."
-		echo -e "If it's pending for a long time, please breakout with Ctrl+C.\nAnd Run '${StartBash} LocalC' manually to check the error prompts.\n"	
-		
-		${StartBash} LocalC &> /dev/null
+		echo -e "If it's pending for a long time, please breakout with Ctrl+C.\nAnd Run '${StartPath}start.sh LocalC' manually to check the error prompts.\n"	
+
+                cd ${StartPath}
+                bash start.sh LocalC &> /dev/null		
 		
 		if [ "${?}" == '0' ]; then
 			RestartSucceed=LocalC
@@ -124,7 +123,7 @@ if [ "${ErrorCount}" != '0' ]; then
 		else
 			RestartFailed=LocalC
 			RestartFailedCount=1
-			echo -e "Failed to restart LocalC this time. It has been recorded for further steps."
+			echo -e "Failed to restart LocalC this time. It has been recorded for further steps. \n"
 		fi
 		echo
 		echo
@@ -134,9 +133,10 @@ if [ "${ErrorCount}" != '0' ]; then
 	do
 		RestartItem=$( echo ${Restart} | cut -d ',' -f ${x} )
 		echo -e "Shell is trying to restart ${RestartItem} now..."
-		echo -e "If it's pending for a long time, please breakout with Ctrl+C.\nAnd Run '${StartBash} -Xmx2048m ${RestartItem}' manually to check the error prompts.\n"	
+		echo -e "If it's pending for a long time, please breakout with Ctrl+C.\nAnd Run '${StartPath}start.sh -Xmx2048m ${RestartItem}' manually to check the error prompts.\n"	
 
-		${StartBash} -Xmx2048m ${RestartItem} &> /dev/null
+                cd ${StartPath}
+                bash start.sh -Xmx2048m ${RestartItem} &> /dev/null
 
 		if [ "${?}" == '0' ]; then
 			if [ "${RestartSucceedCount}" == '0' ]; then
@@ -162,9 +162,9 @@ if [ "${ErrorCount}" != '0' ]; then
 
 	if [ "${RestartFailedCount}" == '0' ]; then
 		echo -e "Shell has tried to restart the stop processes that detected before."
-		echo -e "All stop processes are running now. Congratulations"
+		echo -e "All stop processes are running now. Congratulations! \n"
 	else
-		echo -e "Below lists the failed restarting processes:"
+		echo -e "Below lists the failed restarting processes: \n"
 
 		for y in $( seq 1 ${RestartFailedCount} )
 		do
@@ -173,10 +173,13 @@ if [ "${ErrorCount}" != '0' ]; then
 		done
 
 		if [ "${RestartFailedCount}" != "${ErrorCount}" ]; then
+			
+			echo -e "Besides of the failed restarted, below lists the processes that are successfully restarted: \n"
+			
 			for z in $( seq 1 ${RestartSucceedCount} )
 			do
 				echo -e -n "${z}:\t"
-				echo "${RestartSucceedCount}" | cut -d ',' -f ${z}
+				echo "${RestartSucceed}" | cut -d ',' -f ${z}
 			done
 		fi	
 		echo
