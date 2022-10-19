@@ -113,8 +113,10 @@ if [ "${ErrorCount}" != '0' ]; then
 		echo -e "Shell is trying to restart LocalC now..."
 		echo -e "If it's pending for a long time, please breakout with Ctrl+C.\nAnd Run '${StartPath}start.sh LocalC' manually to check the error prompts.\n"	
 
-                cd /home/authentic/Runtime/authentic-server/bin
-                ./start.sh LocalC &> /dev/null		
+                cd ${StartPath}
+                bash start.sh LocalC &
+		
+		sleep 15s
 		
 		if [ "${?}" == '0' ]; then
 			RestartSucceed=LocalC
@@ -135,10 +137,10 @@ if [ "${ErrorCount}" != '0' ]; then
 		echo -e "Shell is trying to restart ${RestartItem} now..."
 		echo -e "If it's pending for a long time, please breakout with Ctrl+C.\nAnd Run '${StartPath}start.sh -Xmx2048m ${RestartItem}' manually to check the error prompts.\n"	
 
-                cd /home/authentic/Runtime/authentic-server/bin
-                ./start.sh -Xmx2048m ${RestartItem} &> /dev/null
+                cd ${StartPath} 
+                bash start.sh -Xmx2048m ${RestartItem} & 
 		
-		sleep 15
+		sleep 15s
 
 		if [ "${?}" == '0' ]; then
 			if [ "${RestartSucceedCount}" == '0' ]; then
