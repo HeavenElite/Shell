@@ -37,7 +37,7 @@ declare -i RunningCount=0       # Count the Running items.
 declare    Error                # Record all the failed items.
 declare -i ErrorCount=0         # Count the failure items.
 
-File="./checkingitems"
+File="/home/authentic/monitor/checkingitems"
 ItemCount=$(cat "${File}" | wc -l)
 echo
 echo -e "There are ${ItemCount} processes that will be checked by this Shell. \n"
