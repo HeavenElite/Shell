@@ -1,0 +1,7 @@
+全部日志：ll -hrt api/upex-spot-openapi01/logs
+
+列出文件：./LsGrep.sh Spot 'Dec 30'
+
+检索日志：./zGrep.sh Spot 4425819036 2022-12-30-25-info.log.gz
+
+当前日志：./zGrep.sh SpotNow 3577987245
