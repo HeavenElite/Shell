@@ -20,9 +20,9 @@ if [ ${Market} == 'Spot' ]; then
 elif [ ${Market} == 'Future' ]; then
 	zgrep ${UserID} api/upex-contract-openapi0{1,2,5}/logs/${Filename} > LogData/Output.txt
 elif [ ${Market} == 'SpotNow' ]; then
-	zgrep ${UserID} api/upex-spot-openapi0{1,2,3,4}/info.log > LogData/Output.txt
+	grep ${UserID} api/upex-spot-openapi0{1,2,3,4}/info.log > LogData/Output.txt
 elif [ ${Market} == 'FutureNow' ]; then
-	zgrep ${UserID} api/upex-contract-openapi0{1,2,5}/info.log > LogData/Output.txt
+	grep ${UserID} api/upex-contract-openapi0{1,2,5}/info.log > LogData/Output.txt
 fi
 
 echo -e "\nLog data has been greped and stored in LogData/Output.txt"
