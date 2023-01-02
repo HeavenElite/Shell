@@ -1,8 +1,6 @@
 #!/bin/bash
 # Program:
 # 	Get Log Data. Format Output.
-# 	Execute Command in Format like: ./zGrep.sh BusinessLine UserID Filename 
-#	Example: ./zGrep.sh Spot 4425819036 2022-12-30-26-info.log.gz 
 # History:
 # 	Lauris	2023.1.1	First Release
 
@@ -21,6 +19,10 @@ if [ ${Market} == 'Spot' ]; then
 	zgrep ${UserID} api/upex-spot-openapi0{1,2,3,4}/logs/${Filename} > LogData/Output.txt
 elif [ ${Market} == 'Future' ]; then
 	zgrep ${UserID} api/upex-contract-openapi0{1,2,5}/logs/${Filename} > LogData/Output.txt
+elif [ ${Market} == 'SpotNow' ]; then
+	zgrep ${UserID} api/upex-spot-openapi0{1,2,3,4}/info.log > LogData/Output.txt
+elif [ ${Market} == 'FutureNow' ]; then
+	zgrep ${UserID} api/upex-contract-openapi0{1,2,5}/info.log > LogData/Output.txt
 fi
 
 echo -e "\nLog data has been greped and stored in LogData/Output.txt"
@@ -29,3 +31,4 @@ cat LogData/Output.txt | sed -e 's/api\/upex/\n\napi\/upex/g' -e 's/Root/\nRoot/
 
 echo -e "\nLog data has been formated and stored in LogData/Format.txt"
 echo -e "\nSee you next time~\n"
+
