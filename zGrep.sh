@@ -30,5 +30,7 @@ echo -e "\nLog data has been greped and stored in LogData/Output.txt"
 cat LogData/Output.txt | sed -e 's/api\/upex/\n\napi\/upex/g' -e 's/Root/\nRoot/g' -e 's/INFO/\nINFO/g' -e 's/=====/\n/g' -e 's/\",\"/\"\n\"/g' -e 's/\[#/\n/g' -e 's/#\]//g' | sed -e '1,2d' -e 's/{"/\n{\n"/g' -e 's/}/\n}/g' -e 's/,"/\n"/g' -e 's/:\[/:\n\[\n/g' -e 's/\ \[/\n[/g' -e 's/\"\]/\"\n\]/g' > LogData/Format.txt
 
 echo -e "\nLog data has been formated and stored in LogData/Format.txt"
+echo -e "\nLogData directory is:\n"
+ls -htrl LogData
 echo -e "\nSee you next time~\n"
 
